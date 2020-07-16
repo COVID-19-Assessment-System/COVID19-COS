@@ -1,0 +1,216 @@
+Total number of People: 100
+ID  Age Covid Status Severity Address   
+1   72  Contacted    0.05     충청남도      
+2   50  Healthy      0.0      경기도       
+3   49  Contacted    0.125    경상북도      
+4   45  Contacted    0.15     전라남도      
+5   45  Contacted    0.25     전라남도      
+6   66  Confirmed    0.4      부산광역시     
+7   86  Healthy      0.0      전라남도      
+8   43  Healthy      0.0      서울특별시     
+9   63  Healthy      0.0      경기도       
+10  81  Confirmed    0.2      광주광역시     
+11  2   Contacted    0.1      경상북도      
+12  69  Healthy      0.0      전라북도      
+13  66  Healthy      0.0      전라북도      
+14  37  Contacted    0.35     울산광역시     
+15  97  Healthy      0.0      경상북도      
+16  98  Healthy      0.0      경상북도      
+17  56  Confirmed    0.5      전라북도      
+18  26  Contacted    0.225    경상남도      
+19  90  Confirmed    0.75     전라북도      
+20  21  Confirmed    0.35     전라북도      
+21  26  Healthy      0.0      경상북도      
+22  17  Confirmed    0.3      제주특별자치도   
+23  55  Healthy      0.0      부산광역시     
+24  74  Healthy      0.0      경상북도      
+25  91  Contacted    0.2      경상북도      
+26  33  Healthy      0.0      대전광역시     
+27  1   Healthy      0.0      강원도       
+28  91  Confirmed    0.75     전라남도      
+29  74  Confirmed    0.3      전라남도      
+30  52  Contacted    0.2      경기도       
+31  49  Confirmed    0.25     전라남도      
+32  49  Confirmed    0.15     전라남도      
+33  13  Contacted    0.3      경상남도      
+34  90  Contacted    0.1      충청북도      
+35  40  Healthy      0.0      경상남도      
+36  59  Confirmed    0.75     인천광역시     
+37  21  Contacted    0.225    경상남도      
+38  99  Confirmed    0.15     경상남도      
+39  20  Healthy      0.0      경기도       
+40  21  Confirmed    0.8      전라북도      
+41  76  Healthy      0.0      제주특별자치도   
+42  17  Contacted    0.05     서울특별시     
+43  10  Healthy      0.0      전라북도      
+44  50  Contacted    0.375    인천광역시     
+45  58  Contacted    0.1      서울특별시     
+46  44  Confirmed    0.45     경상남도      
+47  1   Confirmed    0.6      강원도       
+48  94  Healthy      0.0      강원도       
+49  96  Healthy      0.0      울산광역시     
+50  96  Healthy      0.0      대전광역시     
+51  25  Healthy      0.0      전라북도      
+52  68  Contacted    0.3      강원도       
+53  59  Confirmed    0.15     경상북도      
+54  50  Confirmed    0.75     전라북도      
+55  13  Contacted    0.15     경상북도      
+56  76  Contacted    0.375    광주광역시     
+57  48  Contacted    0.225    부산광역시     
+58  53  Healthy      0.0      전라북도      
+59  12  Confirmed    0.7      서울특별시     
+60  43  Contacted    0.05     경상북도      
+61  54  Contacted    0.2      울산광역시     
+62  52  Confirmed    0.3      제주특별자치도   
+63  31  Confirmed    0.55     제주특별자치도   
+64  28  Contacted    0.2      전라남도      
+65  40  Contacted    0.125    경상남도      
+66  88  Confirmed    0.35     경기도       
+67  27  Contacted    0.2      충청남도      
+68  40  Confirmed    0.3      전라북도      
+69  66  Contacted    0.15     서울특별시     
+70  49  Contacted    0.3      충청남도      
+71  82  Healthy      0.0      광주광역시     
+72  7   Healthy      0.0      전라남도      
+73  78  Healthy      0.0      서울특별시     
+74  30  Contacted    0.25     서울특별시     
+75  87  Contacted    0.25     전라남도      
+76  72  Contacted    0.3      경상북도      
+77  67  Confirmed    0.2      서울특별시     
+78  16  Healthy      0.0      경기도       
+79  62  Contacted    0.375    전라북도      
+80  24  Healthy      0.0      경상북도      
+81  10  Confirmed    0.4      대구광역시     
+82  72  Confirmed    0.7      인천광역시     
+83  70  Contacted    0.125    경기도       
+84  30  Confirmed    0.45     경기도       
+85  37  Healthy      0.0      경상북도      
+86  23  Contacted    0.075    전라북도      
+87  13  Confirmed    0.4      경상남도      
+88  34  Confirmed    0.1      대구광역시     
+89  19  Confirmed    0.1      충청북도      
+90  12  Healthy      0.0      전라남도      
+91  88  Healthy      0.0      대구광역시     
+92  80  Healthy      0.0      충청북도      
+93  13  Healthy      0.0      서울특별시     
+94  46  Confirmed    0.5      서울특별시     
+95  49  Contacted    0.25     서울특별시     
+96  15  Confirmed    0.1      경기도       
+97  37  Confirmed    0.5      경기도       
+98  40  Healthy      0.0      경상남도      
+99  65  Confirmed    0.4      충청북도      
+100 45  Confirmed    0.5      충청남도      
+
+Number of healthy people: 33
+Number of contacted people: 33
+Number of confirmed people: 34
+Average Severity of contacted people: 0.2
+Average Severity of confirmed people: 0.42
+
+Number of Clusters: 2
+	Cluster 0:
+		Number of People: 67
+		Average of Age: 50.24
+		Average of severities: 0.08
+		The Coordinates of Centroid:
+			X1 (Severity): 0.1
+			X2 (Age): 0.5
+
+	Cluster 1:
+		Number of People: 33
+		Average of Age: 47.21
+		Average of severities: 0.47
+		The Coordinates of Centroid:
+			X1 (Severity): 0.58
+			X2 (Age): 0.47
+
+	-------------------------------------------------------------
+	 Cluster ID | # of People |  Avg. of Ages | Avg. of Severity 
+	          0 |          67 |         50.24 |           0.08
+	          1 |          33 |         47.21 |           0.47
+	------------|-------------|---------------|------------------
+	   Total    |         100 |
+	    SSE     |       12.61 |
+	-------------------------------------------------------------
+
+Number of Clusters: 3
+	Cluster 0:
+		Number of People: 52
+		Average of Age: 50.21
+		Average of severities: 0.04
+		The Coordinates of Centroid:
+			X1 (Severity): 0.05
+			X2 (Age): 0.5
+
+	Cluster 1:
+		Number of People: 9
+		Average of Age: 47.44
+		Average of severities: 0.71
+		The Coordinates of Centroid:
+			X1 (Severity): 0.88
+			X2 (Age): 0.47
+
+	Cluster 2:
+		Number of People: 39
+		Average of Age: 48.36
+		Average of severities: 0.32
+		The Coordinates of Centroid:
+			X1 (Severity): 0.4
+			X2 (Age): 0.48
+
+	-------------------------------------------------------------
+	 Cluster ID | # of People |  Avg. of Ages | Avg. of Severity 
+	          0 |          52 |         50.21 |           0.04
+	          1 |           9 |         47.44 |           0.71
+	          2 |          39 |         48.36 |           0.32
+	------------|-------------|---------------|------------------
+	   Total    |         100 |
+	    SSE     |        7.98 |
+	-------------------------------------------------------------
+
+Number of Clusters: 4
+	Cluster 0:
+		Number of People: 29
+		Average of Age: 50.72
+		Average of severities: 0.23
+		The Coordinates of Centroid:
+			X1 (Severity): 0.29
+			X2 (Age): 0.51
+
+	Cluster 1:
+		Number of People: 17
+		Average of Age: 45.71
+		Average of severities: 0.42
+		The Coordinates of Centroid:
+			X1 (Severity): 0.53
+			X2 (Age): 0.46
+
+	Cluster 2:
+		Number of People: 46
+		Average of Age: 49.57
+		Average of severities: 0.03
+		The Coordinates of Centroid:
+			X1 (Severity): 0.03
+			X2 (Age): 0.5
+
+	Cluster 3:
+		Number of People: 8
+		Average of Age: 49.5
+		Average of severities: 0.73
+		The Coordinates of Centroid:
+			X1 (Severity): 0.91
+			X2 (Age): 0.49
+
+	-------------------------------------------------------------
+	 Cluster ID | # of People |  Avg. of Ages | Avg. of Severity 
+	          0 |          29 |         50.72 |           0.23
+	          1 |          17 |         45.71 |           0.42
+	          2 |          46 |         49.57 |           0.03
+	          3 |           8 |          49.5 |           0.73
+	------------|-------------|---------------|------------------
+	   Total    |         100 |
+	    SSE     |        5.48 |
+	-------------------------------------------------------------
+
+
+Process finished with exit code 0
