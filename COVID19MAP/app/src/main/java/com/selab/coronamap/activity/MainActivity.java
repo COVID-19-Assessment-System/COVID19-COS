@@ -25,9 +25,16 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
+import com.opencsv.CSVReader;
 import com.selab.coronamap.R;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback,
@@ -37,11 +44,13 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         ClusterManager.OnClusterItemInfoWindowClickListener<CMarker> {
     private GoogleMap googleMap;
 
+    private GeocodeUtil geoutil = new GeocodeUtil(this);
+
     private ClusterManager<CMarker> clusterManager;
     private Random mRandom = new Random(1984);
     private Random r = new Random();
     private ChartRenderer chart;
-    private String[] names = {"Toyota", "Ford", "Honda", "Dodge"};
+    private String[] names = {"Hyundai", "Kia", "Samsung", "SSangYong"};
     private String[] markerIcon = {"red", "green", "blue", "yellow"};
     private int[] colors = {Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW};
     private boolean pieChart = true;
@@ -49,6 +58,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private LatLngBounds location = new LatLngBounds(
             new LatLng(37.492332, 126.948789), new LatLng(37.502988, 126.983841));
     private Button btnPie, btnDonut, btnBar;
+
+    List<String[]> csvData = new ArrayList<String[]>();
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,6 +70,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
         setUpMap();
+
+//        tempButtonToWatchData();
+        loadCSVfile();  // load corona19 data
 
         btnPie = findViewById(R.id.btn_pie);
         btnBar = findViewById(R.id.btn_bar);
@@ -82,6 +97,44 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 donutChart(view);
             }
         });
+    }
+
+//    public void tempButtonToWatchData () {
+//        Button tempbtn = findViewById(R.id.temp_button);
+//        tempbtn.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View v) {
+////                Log.i("temp_button", addressToCoords());
+////                addressToCoords("전라북도 남원시 향교동");
+////                for(String[] strArray: csvData){
+////                    System.out.println(strArray[2]);
+////                    System.out.println(addressToCoords(strArray[2]));
+////                }
+//            }
+//        });
+//    }
+
+    private LatLng addressToCoords(String address){
+        ArrayList<GeocodeUtil.GeoLocation> locationList = geoutil.getGeoLocationListUsingAddress(address);
+        return new LatLng(locationList.get(0).latitude, locationList.get(0).longitude);
+    }
+
+    private void loadCSVfile() {
+        InputStreamReader is = new InputStreamReader(getResources().openRawResource(R.raw.corona_data));
+        BufferedReader reader = new BufferedReader(is);
+        CSVReader read = new CSVReader(reader);
+
+        String[] record;
+        try {
+            while ((record = read.readNext()) != null){
+                csvData.add(record);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+//        for(String[] strArray: csvData) {
+//            System.out.println(Arrays.toString(strArray));
+//        }
     }
 
     @Override
@@ -184,12 +237,20 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         yellow.setText(names[3]);
     }
 
-
     private void addItems() {
-        for (int i = 0; i < 300; i++) {
-            int rand = r.nextInt(4);
+//        for (int i = 0; i < 300; i++) {
+//            int rand = r.nextInt(4);
+//
+//            CMarker marker = new CMarker(randomPosition(), names[rand], getDrawableId(markerIcon[rand]));
+//            marker.setTitle(names[rand]);
+//
+//            clusterManager.addItem(marker);
+//        }
 
-            CMarker marker = new CMarker(randomPosition(), names[rand], getDrawableId(markerIcon[rand]));
+        for (String[] strArray: csvData) {
+            int rand = r.nextInt(4);
+//            System.out.println(addressToCoords(strArray[2]));
+            CMarker marker = new CMarker(addressToCoords(strArray[2]), names[rand], getDrawableId(markerIcon[rand]));
             marker.setTitle(names[rand]);
 
             clusterManager.addItem(marker);
