@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">COVID-19MAP</string>
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyAGsTZw4u0BOQ3n4dbP7JPFWFTykpHSQ5s</string>
+    <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
+</resources>
