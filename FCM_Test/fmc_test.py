@@ -1,0 +1,10 @@
+from pyfcm import FCMNotification
+
+push_service = FCMNotification(api_key="AAAA9ypCuLM:APA91bHoYh7SqGg9XMRJUiUs3FDrHXiS09FaijBUpzv7mPj8Zuf1CB9wxt39meQWtSVJK22MM0aR3zgEM-XiqlOq90CNrhoCJ1UyCFOrIbwvgSjAjcbNgI4RgTnrokaxfwIGd3T6dII4")
+
+registration_id = "fOKqpSfxRjmJn7O0_g55aN:APA91bHYGmg_qEQ5pfWMnfLbyhRxQ7YfgZCx4mJQx4aVg-eb0dCHz1BUjG4pC9oMOXXSGjI3Lkve_e56MoCPuj-zxP-oFfzzhtDq6sub0ay3NEXJIJ1FATRAI8BhG5vF0TjU6gvWxx1g"
+message_title = "Python Test"
+message_body = "Python Test"
+result = push_service.notify_single_device(registration_id=registration_id, message_title=message_title, message_body=message_body)
+
+print(result)
