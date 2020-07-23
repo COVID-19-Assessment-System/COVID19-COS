@@ -440,13 +440,14 @@ class PycClusteringPeople:
 
         ax.legend(fontsize=12)
         plt.title("Result of Clustering (K=" + str(num_cluster) + ", Weight=" + str(self.weight_list) + ")")
-        plt.xlabel("Severity")
+        # plt.xlabel("Severity")
+        plt.xlabel("ISR")
         plt.ylabel("Age")
         # plt.show()
         file_path = "./Cluster_Result_Plotting_pyc/"
         file_name = "cluster_result_" + str(num_cluster) + "_" + str(self.weight_list) + ".png"
         if additional_data is not None:
-            file_name = file_name[:-4] + '_new_data_plot.png'
+            file_name = file_name[:-4] + '_false_data_plot.png'
         fig.savefig(file_path + file_name, dpi=300)
         plt.close()
 
@@ -512,7 +513,7 @@ class PycClusteringPeople:
 
 if __name__ == '__main__':
     # CODE FOR CLUSTERING
-    file_path = './corona_data.csv'  # wha qnwhrgkrlsgkwl... rmfjaus wlsWk ldqjsdps tfldjf
+    file_path = './corona_data.csv'  #
     target_col_name_list = ['Severity', 'Age']
     base_date = parse("2020-7-2").date()
 
@@ -533,13 +534,14 @@ if __name__ == '__main__':
 
     # for i, j in zip(range(0, 11), range(11, 0)):
     #     print(i. j)
-    weight_list = [1, 1]
+    weight_list = [0.3, 0.7]
     for num_cluster in k_list:
         cluster_id_list = [id for id in range(num_cluster)]
         predicted_list = pcp.pyc_cluster_kmeans(num_cluster,
                                                 weight_list,
                                                 distance_function)
-        pcp.plot_data(num_cluster)
+        if num_cluster == 5:
+            pcp.plot_data(num_cluster)
 
     # print("Clustering is done.\n")
     #
