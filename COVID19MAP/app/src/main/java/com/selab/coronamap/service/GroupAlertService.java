@@ -56,8 +56,8 @@ public class GroupAlertService extends Service {
                         Log.d(TAG,  sdf.format(date));
                         // set condition
 
-                        sendGrpAlertNotification(sdf.format(date)+
-                                "  The notification is from local.");   // Send notification
+//                        sendGrpAlertNotification(sdf.format(date)+
+//                                "  The notification is from local.");   // Send notification
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

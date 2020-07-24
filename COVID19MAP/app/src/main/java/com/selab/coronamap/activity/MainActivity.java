@@ -9,20 +9,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
-import com.aminyazdanpanah.maps.android.charts.BarChartRenderer;
 import com.aminyazdanpanah.maps.android.charts.ChartRenderer;
-import com.aminyazdanpanah.maps.android.charts.DonutChartRenderer;
 import com.aminyazdanpanah.maps.android.charts.PieChartRenderer;
 import com.aminyazdanpanah.maps.android.charts.model.CMarker;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -45,13 +41,10 @@ import com.selab.coronamap.service.GroupAlertService;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback,
         ClusterManager.OnClusterClickListener<CMarker>,
@@ -101,7 +94,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMapAsync(this);
 //        tempButtonToWatchData();
-        loadCSVfile();  // load corona19 data
+        loadCSVFile();  // load corona19 data
 
         if(GroupAlertService.serviceIntent == null){        // Code for connecting local notification service
             grpAlertIntent = new Intent(this, GroupAlertService.class);
@@ -130,7 +123,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         return new LatLng(locationList.get(0).latitude, locationList.get(0).longitude);
     }
 
-    private void loadCSVfile() {
+    private void loadCSVFile() {
 
         InputStreamReader is = new InputStreamReader(getResources().openRawResource(R.raw.corona_data));
         BufferedReader reader = new BufferedReader(is);
