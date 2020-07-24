@@ -23,22 +23,13 @@ public class CORONAFCMService extends FirebaseMessagingService {
     private static final String TAG = "CORONAFCMService";
 
     @Override
-    public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
+    public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {   // To check received message
         super.onMessageReceived(remoteMessage);
         String msgTitle = "";
         String msgBody = "";
         Log.d(TAG, "Message data: " + remoteMessage.getData());
         if (remoteMessage.getData().size() > 0) {
             Log.d(TAG, "Message data payload: " + remoteMessage.getData());
-
-            if (/* Check if data needs to be processed by long running job */ true) {
-                // For long-running tasks (10 seconds or more) use WorkManager.
-//                scheduleJob();
-            } else {
-                // Handle message within 10 seconds
-//                handleNow();
-            }
-
         }
 
         if (remoteMessage.getNotification() != null) {
@@ -69,7 +60,6 @@ public class CORONAFCMService extends FirebaseMessagingService {
                         .setContentTitle(msgTitle)
                         .setContentText(msgBody)
                         .setSound(defaultSoundUri)
-//                        .setContentIntent(pendingIntent)
                         .setPriority(NotificationCompat.PRIORITY_HIGH)
                         .setAutoCancel(true)
                         .setContentIntent(fspd)

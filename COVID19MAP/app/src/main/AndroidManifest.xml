@@ -28,6 +28,12 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".activity.SignupActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+
         <service
             android:name=".service.CORONAFCMService"
             android:exported="false">

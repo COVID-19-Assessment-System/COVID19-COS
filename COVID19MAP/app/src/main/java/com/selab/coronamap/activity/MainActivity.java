@@ -1,13 +1,22 @@
 package com.selab.coronamap.activity;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
@@ -22,11 +31,17 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
 import com.opencsv.CSVReader;
 import com.selab.coronamap.R;
+import com.selab.coronamap.classes.CommHelper;
+import com.selab.coronamap.service.GroupAlertService;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -34,6 +49,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
@@ -42,77 +58,72 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         ClusterManager.OnClusterInfoWindowClickListener<CMarker>,
         ClusterManager.OnClusterItemClickListener<CMarker>,
         ClusterManager.OnClusterItemInfoWindowClickListener<CMarker> {
+    private final static String TAG = "MainActivity";
+
     private GoogleMap googleMap;
-
-    private GeocodeUtil geoutil = new GeocodeUtil(this);
-
+    private GeocodeUtil geoutil;
     private ClusterManager<CMarker> clusterManager;
-    private Random mRandom = new Random(1984);
-    private Random r = new Random();
     private ChartRenderer chart;
-    private String[] names = {"Hyundai", "Kia", "Samsung", "SSangYong"};
-    private String[] markerIcon = {"red", "green", "blue", "yellow"};
-    private int[] colors = {Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW};
-    private boolean pieChart = true;
-    private boolean barChart, donutChart;
-    private LatLngBounds location = new LatLngBounds(
-            new LatLng(37.492332, 126.948789), new LatLng(37.502988, 126.983841));
-    private Button btnPie, btnDonut, btnBar;
-
-    List<String[]> csvData = new ArrayList<String[]>();
+    private String[] markerIcon = {"red", "green", "gray", "yellow", "blue", "black", "cyan", "white", "magenta"};
+    private String[] names = {"1", "2", "3", "4", "5", "6", "7", "8", "9"};
+    private int[] colors = {Color.RED, Color.GREEN, Color.GRAY, Color.YELLOW, Color.BLUE, Color.BLACK, Color.CYAN, Color.WHITE,Color.MAGENTA};
+    private LatLngBounds location = new LatLngBounds(new LatLng(37.492332, 126.948789), new LatLng(37.502988, 126.983841));
+    List<String[]> csvData = new ArrayList<>();
 
 
+    private Intent grpAlertIntent;
+    Button btnSignUp;
+    FrameLayout layoutProgress;
+    CommHelper commHelper;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
+        commHelper = new CommHelper(getApplicationContext());
+        geoutil = new GeocodeUtil(MainActivity.this);
+        layoutProgress = findViewById(R.id.layout_progress);
+        btnSignUp = findViewById(R.id.btn_signup);
+        layoutProgress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+        btnSignUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, SignupActivity.class);
+                startActivity(intent);
+            }
+        });
         setUpMap();
 
+        ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMapAsync(this);
 //        tempButtonToWatchData();
         loadCSVfile();  // load corona19 data
 
-        btnPie = findViewById(R.id.btn_pie);
-        btnBar = findViewById(R.id.btn_bar);
-        btnDonut = findViewById(R.id.btn_donut);
-        btnPie.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                pieChart(view);
-            }
-        });
+        if(GroupAlertService.serviceIntent == null){        // Code for connecting local notification service
+            grpAlertIntent = new Intent(this, GroupAlertService.class);
+            startService(grpAlertIntent);   // To start the service
+        }else{
+            grpAlertIntent = GroupAlertService.serviceIntent;
+        }
 
-        btnBar.setOnClickListener(new View.OnClickListener() {
+        // Code to get firebase instance id. the id is applied to distinguish devices.
+        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
             @Override
-            public void onClick(View view) {
-                barChart(view);
-            }
-        });
+            public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                if (!task.isSuccessful()){
+                    return;
+                }
+                String token = task.getResult().getToken();     // To get current device's id
 
-        btnDonut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                donutChart(view);
+                Log.d(TAG, token);
+//                Toast.makeText(MainActivity.this, token, Toast.LENGTH_SHORT).show();
             }
         });
     }
-
-//    public void tempButtonToWatchData () {
-//        Button tempbtn = findViewById(R.id.temp_button);
-//        tempbtn.setOnClickListener(new View.OnClickListener(){
-//            @Override
-//            public void onClick(View v) {
-////                Log.i("temp_button", addressToCoords());
-////                addressToCoords("전라북도 남원시 향교동");
-////                for(String[] strArray: csvData){
-////                    System.out.println(strArray[2]);
-////                    System.out.println(addressToCoords(strArray[2]));
-////                }
-//            }
-//        });
-//    }
 
     private LatLng addressToCoords(String address){
         ArrayList<GeocodeUtil.GeoLocation> locationList = geoutil.getGeoLocationListUsingAddress(address);
@@ -120,6 +131,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void loadCSVfile() {
+
         InputStreamReader is = new InputStreamReader(getResources().openRawResource(R.raw.corona_data));
         BufferedReader reader = new BufferedReader(is);
         CSVReader read = new CSVReader(reader);
@@ -140,20 +152,22 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onResume() {
         super.onResume();
-        setUpMap();
     }
 
     private void setUpMap() {
-        ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMapAsync(this);
+        Log.d(TAG, "SetupMap");
     }
 
     @Override
     public void onMapReady(GoogleMap map) {
+        Log.d(TAG, "OnMapReady");
         if (googleMap != null) {
             return;
         }
         this.googleMap = map;
         demo();
+        addItems();
+        clusterManager.cluster();
 
     }
 
@@ -200,20 +214,11 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         clusterManager = new ClusterManager<>(this, googleMap);
 
-        if (pieChart) {
-            chart = new PieChartRenderer(getApplicationContext(), googleMap, clusterManager);
-        } else if (barChart) {
-            chart = new BarChartRenderer(getApplicationContext(), googleMap, clusterManager);
-        } else if (donutChart) {
-            chart = new DonutChartRenderer(getApplicationContext(), googleMap, clusterManager);
-        }
+        chart = new PieChartRenderer(getApplicationContext(), googleMap, clusterManager);
         chart.colors(colors);
         chart.names(names);
         clusterManager.setRenderer(chart);
 
-        setTexts();
-
-        getLayoutInflater();
         googleMap.setOnCameraIdleListener(clusterManager);
         googleMap.setOnMarkerClickListener(clusterManager);
         googleMap.setOnInfoWindowClickListener(clusterManager);
@@ -221,42 +226,53 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         clusterManager.setOnClusterInfoWindowClickListener(this);
         clusterManager.setOnClusterItemClickListener(this);
         clusterManager.setOnClusterItemInfoWindowClickListener(this);
-        addItems();
-        clusterManager.cluster();
-    }
 
-    private void setTexts() {
-        TextView red = findViewById(R.id.red);
-        TextView green = findViewById(R.id.green);
-        TextView blue = findViewById(R.id.blue);
-        TextView yellow = findViewById(R.id.yellow);
-
-        red.setText(names[0]);
-        green.setText(names[1]);
-        blue.setText(names[2]);
-        yellow.setText(names[3]);
     }
 
     private void addItems() {
-//        for (int i = 0; i < 300; i++) {
-//            int rand = r.nextInt(4);
-//
-//            CMarker marker = new CMarker(randomPosition(), names[rand], getDrawableId(markerIcon[rand]));
-//            marker.setTitle(names[rand]);
-//
-//            clusterManager.addItem(marker);
-//        }
+        Log.d(TAG, "addItems");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    HashSet<String> idset = new HashSet<>();
+                    for (String[] strArray: csvData) {
+                        try{
+                            int clusterId = Integer.parseInt(strArray[7]);
+                            idset.add(strArray[7]);
+                            CMarker marker = new CMarker(addressToCoords(strArray[3]), String.valueOf(clusterId+1), getDrawableId(markerIcon[clusterId]));
+                            marker.setTitle(String.valueOf(clusterId+1));
 
-        for (String[] strArray: csvData) {
-            int rand = r.nextInt(4);
-//            System.out.println(addressToCoords(strArray[2]));
-            CMarker marker = new CMarker(addressToCoords(strArray[2]), names[rand], getDrawableId(markerIcon[rand]));
-            marker.setTitle(names[rand]);
+                            clusterManager.addItem(marker);
+                        }catch (Exception e){}
+                    }
+                    Log.d(TAG, idset.toString());
+                    LinearLayout layoutLegend = findViewById(R.id.layout_legend);
+                    for(int i = idset.size()-1; i >= 0;i--){
+                        Log.d(TAG, String.valueOf(i));
 
-            clusterManager.addItem(marker);
-        }
+                        LayoutInflater vi = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                        View v = vi.inflate(R.layout.view_legende, null);
+
+                        View vColor = v.findViewById(R.id.legend_color);
+                        vColor.setBackgroundColor(colors[i]);
+                        TextView vName = v.findViewById(R.id.legend_name);
+                        vName.setText(String.valueOf(i));
+
+                        layoutLegend.addView(v, 0, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                    }
+                    layoutProgress.setVisibility(View.GONE);
+                }
+            });
+            }
+        }).start();
+
     }
     private int getDrawableId(String name) {
+        Log.d(TAG, "getDrawableId");
+
         try {
             Field field = R.drawable.class.getField("marker_" + name);
             return field.getInt(null);
@@ -266,47 +282,19 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         return -1;
     }
 
-    private LatLng randomPosition() {
-        double minLatitude = location.southwest.latitude;
-        double maxLatitude = location.northeast.latitude;
-        double minLongitude = location.southwest.longitude;
-        double maxLongitude = location.northeast.longitude;
-        return new LatLng(
-                minLatitude + (maxLatitude - minLatitude) * mRandom.nextDouble(),
-                minLongitude + (maxLongitude - minLongitude) * mRandom.nextDouble());
-    }
-
     public void pieChart(View v) {
-        pieChart = true;
         location = new LatLngBounds(
 //                new LatLng(35.607781, 51.187924), new LatLng(35.778940, 51.548771));
                 new LatLng(37.492332, 126.948789), new LatLng(37.502988, 126.983841));
-
-        names = new String[]{"Hyundai", "Kia", "Samsung", "SSangYong"};
-        resetMap();
-    }
-
-    public void barChart(View v) {
-        donutChart = pieChart = false;
-        barChart = true;
-        location = new LatLngBounds(
-                new LatLng(29.504185, 52.423688), new LatLng(29.699397, 52.650020));
-        names = new String[]{" <$1000 ", "$1000 - $2000", "$2000 - $3000", "> $3000"};
-        resetMap();
-    }
-
-    public void donutChart(View v) {
-        barChart = pieChart = false;
-        donutChart = true;
-        location = new LatLngBounds(
-                new LatLng(38.022076, 46.224534), new LatLng(38.119992, 46.377530));
-        names = new String[]{"School", "Hospital", "Police Station", "Market"};
         resetMap();
     }
 
     private void resetMap() {
+        Log.d(TAG, "resetMap");
         clusterManager.clearItems();
         googleMap.clear();
         demo();
+        addItems();
+        clusterManager.cluster();
     }
 }

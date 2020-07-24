@@ -1,124 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent">
 
-    <fragment
-        android:id="@+id/map"
+        <!--        <Button-->
+        <!--            android:id="@+id/temp_button"-->
+        <!--            android:text="Print Data"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="50sp" />-->
+
+
+        <fragment
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+        <LinearLayout
+            android:id="@+id/layout_legend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="bottom|right"
+            android:background="@color/legend"
+            android:padding="10dp">
+        </LinearLayout>
+
+
+    <Button
+        android:id="@+id/btn_signup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sign Up"
+        android:layout_gravity="right|top"/>
+    <FrameLayout
+        android:id="@+id/layout_progress"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="com.google.android.gms.maps.SupportMapFragment"/>
-<!--        <Button-->
-<!--            android:id="@+id/temp_button"-->
-<!--            android:text="Print Data"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="50sp" />-->
+        android:background="@color/overlay">
+        <ProgressBar
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </FrameLayout>
 
-
-    <TableLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="10dp"
-        android:background="#ABFFFFFF">
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_margin="5dp"
-            android:id="@+id/table1"
-            android:layout_centerHorizontal="true"
-            android:layout_height="wrap_content">
-
-            <View
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:background="#FFFF0000" />
-
-            <TextView
-                android:textSize="14sp"
-                android:paddingLeft="10dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:id="@+id/red" />
-
-            <View
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:paddingLeft="5dp"
-                android:background="#FF00FF00"
-                android:paddingStart="5dp" />
-
-            <TextView
-                android:textSize="14sp"
-                android:paddingLeft="10dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:id="@+id/green" />
-        </TableRow>
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_margin="5dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/table1">
-
-            <View
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:background="#FF0000FF" />
-
-            <TextView
-                android:textSize="14sp"
-                android:paddingLeft="10dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:id="@+id/blue" />
-
-            <View
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:paddingLeft="5dp"
-                android:background="#FFFFFF00" />
-
-            <TextView
-                android:textSize="14sp"
-                android:paddingLeft="10dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:id="@+id/yellow" />
-        </TableRow>
-    </TableLayout>
-
-
-    <TableRow
-        android:id="@+id/tableRow1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"
-        android:layout_marginTop="15dp" >
-
-        <Button
-            android:id="@+id/btn_pie"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:background="@drawable/pie_chart"/>
-
-        <Button
-            android:id="@+id/btn_bar"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:background="@drawable/bar_chart" />
-
-        <Button
-            android:id="@+id/btn_donut"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:background="@drawable/donut_chart"/>
-
-    </TableRow>
-
-</RelativeLayout>
+</FrameLayout>

@@ -51,12 +51,13 @@ public class GroupAlertService extends Service {
                 boolean run = true;
                 while (run){
                     try {
-                        Thread.sleep(SLEEP_TIME);
+                        Thread.sleep(SLEEP_TIME);   // To set sleep at thread
                         Date date = new Date();
                         Log.d(TAG,  sdf.format(date));
-//                        Toast.makeText(getApplication(), sdf.format(date), Toast.LENGTH_LONG).show();
+                        // set condition
 
-//                        sendGrpAlertNotification(sdf.format(date));
+                        sendGrpAlertNotification(sdf.format(date)+
+                                "  The notification is from local.");   // Send notification
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -68,10 +69,13 @@ public class GroupAlertService extends Service {
 
     }
 
+    /**
+     * To make notification
+     * @param msgBody: string, the body text of notification
+     */
     private void sendGrpAlertNotification(String msgBody) {
         Intent i = new Intent(this, MainActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pi = PendingIntent.getActivity(this, 0, i, PendingIntent.FLAG_ONE_SHOT);
         PendingIntent fspd = PendingIntent.getActivity(this, 1313, i,0);
 
         String channelId = "fcm_default_channel";//getString(R.string.default_notification_channel_id);
@@ -96,7 +100,7 @@ public class GroupAlertService extends Service {
             notificationManager.createNotificationChannel(channel);
         }
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build()); // To make noti
     }
 
     @Override
@@ -104,7 +108,6 @@ public class GroupAlertService extends Service {
         super.onDestroy();
         serviceIntent = null;
         setGroupAlarmTimer();
-
     }
 
     private void setGroupAlarmTimer() {
@@ -129,68 +132,10 @@ public class GroupAlertService extends Service {
         return super.onUnbind(intent);
     }
 
-    LocationListener[] mLocationListeners = new LocationListener[]{new LocationListener(LocationManager.GPS_PROVIDER)};
-
     @Override
     public void onCreate() {
         super.onCreate();
 
-        initializeLocationManager();
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                LOCATION_INTERVAL, LOCATION_DISTANCE, mLocationListeners[0]);
-
     }
 
-    private void initializeLocationManager() {
-        Log.e(TAG, "initializeLocationManager - LOCATION_INTERVAL: "+ LOCATION_INTERVAL + " LOCATION_DISTANCE: " + LOCATION_DISTANCE);
-        if (mLocationManager == null) {
-            mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-        }
-    }
-
-    private class LocationListener implements android.location.LocationListener {
-        Location mLastLocation;
-
-        public LocationListener(String provider) {
-            Log.e(TAG, "LocationListener " + provider);
-            mLastLocation = new Location(provider);
-        }
-
-        @Override
-        public void onLocationChanged(Location location) {
-            Log.e(TAG, "onLocationChanged: " + location);
-            double longitude = location.getLongitude();    //경도
-
-            double latitude = location.getLatitude();         //위도
-
-            float accuracy = location.getAccuracy();        //신뢰도
-            mLastLocation.set(location);
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-            Log.e(TAG, "onProviderDisabled: " + provider);
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-            Log.e(TAG, "onProviderEnabled: " + provider);
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-            Log.e(TAG, "onStatusChanged: " + provider);
-        }
-    }
 }
