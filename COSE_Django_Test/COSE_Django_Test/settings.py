@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '=u7=01_l)g^dv!461%_hy!^fh93(^m#%t06)bx_4m943r7#%jb'
+SECRET_KEY = 'e(jx55r7v98!l=e5zzgmzyj!s_jcmie^j$vtoj7g^atb_z(b#('
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -31,7 +31,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -85,7 +84,6 @@ DATABASES = {
         'PORT': '3306',  # 데이터베이스 포트(보통은 3306)
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
