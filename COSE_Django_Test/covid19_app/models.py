@@ -954,6 +954,7 @@ class SafetyRiskAnalyticMethod(models.Model):
         except:
             return False
 
+
 class SrSrAnalyticMethod(models.Model):
     # [column name] = model.[column type].(conditions of column)
     sr_analytic_method = models.ForeignKey(SafetyRiskAnalyticMethod, models.DO_NOTHING, blank=True, null=True)
@@ -966,19 +967,63 @@ class SrSrAnalyticMethod(models.Model):
 
 class StatisticalMethod(models.Model):
     # [column name] = model.[column type].(conditions of column)
-    metric = models.CharField(max_length=45, blank=True, null=True)
+    metric_name = models.CharField(max_length=255, blank=True, null=True)
     safety_risk_analytic_method = models.ForeignKey(SafetyRiskAnalyticMethod, models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
         managed = True
         db_table = 'statistical_method'
 
+    def create_statistical_method(self, metric_name):
+        sram = SafetyRiskAnalyticMethod()  # super class call
+        sram.create_safety_risk_analytic_method()  # create super class
+        self.safety_risk_analytic_method = sram
+
+        # column value assignment
+        self.metric_name = metric_name
+
+        try:
+            self.save()  # execute query
+            return True
+        except:
+            return False
+
+    def retrieve_statistical_method(self, metric_name=None):
+        queryset = SafetyRiskAnalyticMethod.objects
+
+        try:
+            # checking the value of this(sub) class
+            if metric_name is not None:
+                queryset = queryset.filter(metric_name=metric_name)
+        except:
+            return ()
+
+        return tuple(queryset.values())  # returning the queryset as tuple
+
+    def update_statistical_method(self, metric_name=None):
+        self.metric_name = metric_name
+
+        try:
+            self.save()  # execute query
+            return True
+        except:
+            return False
+
+    def delete_statistical_method(self):
+        try:
+            self.delete()  # execute query
+            # delete super class
+            self.safety_risk_analytic_method.delete_safety_risk_analytic_method()
+            return True
+        except:
+            return False
+
 
 class User(models.Model):
     # [column name] = model.[column type].(conditions of column)
     age = models.IntegerField(blank=True, null=True)
     name = models.CharField(max_length=255, blank=True, null=True)
-    email = models.CharField(max_length=255, blank=True, null=True)
+    email = models.CharField(max_length=255, unique=True, blank=True, null=True)
     password = models.CharField(max_length=255, blank=True, null=True)
     person = models.ForeignKey(Person, models.DO_NOTHING, blank=True, null=True)
 
