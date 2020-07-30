@@ -46,6 +46,7 @@ class AlertOption(models.Model):
     def delete_alert_option(self):
         pass
 
+
 class Building(models.Model):
     # [column name] = model.[column type].(conditions of column)
     building_type = models.CharField(max_length=255, blank=True, null=True)
@@ -76,7 +77,8 @@ class Building(models.Model):
         try:
             self.save()  # execute query
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
     def retrieve_building(self,
@@ -102,7 +104,8 @@ class Building(models.Model):
                 queryset = queryset.filter(building_type=building_type)
             if building_name is not None:
                 queryset = queryset.filter(building_name=building_name)
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return ()
 
         result = []
@@ -143,7 +146,8 @@ class Building(models.Model):
         try:
             self.save()  # execute query
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
     def delete_building(self):
@@ -151,7 +155,8 @@ class Building(models.Model):
             self.delete()
             self.group.delete_group()
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
 
@@ -185,7 +190,8 @@ class Country(models.Model):
         try:
             self.save()  # execute query
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
     def retrieve_country(self,
@@ -212,7 +218,8 @@ class Country(models.Model):
 
             if continent is not None:
                 queryset = queryset.filter(continent=continent)
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return ()
 
     def update_country(self,
@@ -239,7 +246,8 @@ class Country(models.Model):
         try:
             self.save()  # execute query
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
     def delete_country(self):
@@ -247,7 +255,8 @@ class Country(models.Model):
             self.delete()
             self.region.delete_region()
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
 
@@ -280,7 +289,8 @@ class Facility(models.Model):
         try:
             self.save()  # execute query
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
     def retrieve_facility(self,
@@ -306,7 +316,8 @@ class Facility(models.Model):
                 queryset = queryset.filter(facility_type=facility_type)
             if facility_name is not None:
                 queryset = queryset.filter(facility_name=facility_name)
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return ()
 
         result = []
@@ -347,7 +358,8 @@ class Facility(models.Model):
         try:
             self.save()  # execute query
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
     def delete_facility(self):
@@ -355,7 +367,8 @@ class Facility(models.Model):
             self.delete()
             self.group.delete_group()
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
 
@@ -383,7 +396,8 @@ class Group(models.Model):
         try:
             self.save()  # execute query
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
     def retrieve_group(self,
@@ -405,7 +419,8 @@ class Group(models.Model):
 
             return tuple(queryset.values())
 
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return ()
 
     def update_group(self,
@@ -426,14 +441,16 @@ class Group(models.Model):
         try:
             self.save()  # execute query
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
     def delete_group(self):
         try:
             self.delete()
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
 
@@ -441,69 +458,68 @@ class GroupSafetyRisk(models.Model):
     # [column name] = model.[column type].(conditions of column)
     gsr = models.FloatField(blank=True, null=True)
     group = models.ForeignKey(Group, models.DO_NOTHING, blank=True, null=True)
-    gsr_option = models.OneToOneField('GSROption', blank=True, null=True, on_delete=models.DO_NOTHING)
+    gsr_option = models.ForeignKey('GSROption', blank=True, null=True, on_delete=models.DO_NOTHING)
     safety_risk = models.ForeignKey('SafetyRisk', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
         managed = True
         db_table = 'group_safety_risk'
 
-    def create_group_safety_risk(self,
-                                 gsr,
-                                 group_object,
-                                 # gsr_option_object,
-                                 ):
+    def create_group_safety_risk(self, gsr, group_object, gsr_option_object, methods_object):
         sr = SafetyRisk()
-        sr.create_safety_risk(datetime.now())
+        sr.create_safety_risk(datetime.now(), methods_object)
         self.safety_risk = sr
 
         self.gsr = gsr
         self.group = group_object
-        # self.gsr_option_id = gsr_option_id
+        self.gsr_option = gsr_option_object
 
         try:
             self.save()  # execute query
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
-    def retrieve_group_safety_risk(self,
-                                   gsr=None,
-                                   group_object=None,
-                                   # gsr_option_object=None,
-                                   ):
+    def retrieve_group_safety_risk(self, gsr=None, group_object=None, gsr_option_object=None, methods_object=None):
         queryset = GroupSafetyRisk.objects
 
         try:
+            # checking the value of super class
+            if methods_object is not None:
+                queryset = queryset.filter(safety_risk__methods=methods_object)
+
+            # checking the value of this(sub) class
             if gsr is not None:
                 queryset = queryset.filter(gsr=gsr)
             if group_object is not None:
                 queryset = queryset.filter(group_object=group_object)
-            # if gsr_option_object is not None:
-            #     queryset = queryset.filter(gsr_option_object=gsr_option_object)
-        except:
+            if gsr_option_object is not None:
+                queryset = queryset.filter(gsr_option=gsr_option_object)
+        except Exception as ex:
+            print("Exception!:", ex)
             return ()
 
         return tuple(queryset.values())
 
+    def update_group_safety_risk(self, gsr=None, group_object=None, gsr_option_object=None, methods_object=None):
+        if methods_object is not None:
+            self.safety_risk.update_safety_risk(methods_object=methods_object)
 
-    def update_group_safety_risk(self,
-                                 gsr=None,
-                                 group_object=None,
-                                 # gsr_option_object,
-                                 ):
+        # updating values of sub class
         if gsr is not None:
             self.gsr = gsr
         if group_object is not None:
             self.group = group_object
-        # if gsr_option_object is not None:
-        #     self.gsr_option_id = gsr_option_object
+        if gsr_option_object is not None:
+            self.gsr_option = gsr_option_object
 
         try:
             self.save()  # execute query
             return True
 
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
     def delete_group_safety_risk(self):
@@ -511,28 +527,60 @@ class GroupSafetyRisk(models.Model):
             self.delete()
             self.safety_risk.delete_safety_risk()
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
 
 class GSROption(models.Model):
+    # [column name] = model.[column type].(conditions of column)
     weight_list = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         managed = True
         db_table = 'gsr_option'
 
-    def create_gsr_option(self):
-        pass
+    def create_gsr_option(self, weight_list):
+        self.weight_list = weight_list
 
-    def retrieve_gsr_option(self):
-        pass
+        try:
+            self.save()  # execute query
+            return True
+        except Exception as ex:
+            print("Exception!:", ex)
+            return False
 
-    def update_gsr_option(self):
-        pass
+    def retrieve_gsr_option(self, weight_list):
+        queryset = GSROption.objects
+
+        try:
+            # TODO: How to handle the 'list'?
+            # checking the value of this(sub) class
+            if metric_name is not None:
+                queryset = queryset.filter(weight_list=weight_list)
+        except Exception as ex:
+            print("Exception!:", ex)
+            return ()
+
+        return tuple(queryset.values())  # returning the queryset as tuple
+
+    def update_gsr_option(self, weight_list):
+        self.weight_list = weight_list
+
+        try:
+            self.save()  # execute query
+            return True
+        except Exception as ex:
+            print("Exception!:", ex)
+            return False
 
     def delete_gsr_option(self):
-        pass
+        try:
+            self.delete()  # execute query
+            return True
+        except Exception as ex:
+            print("Exception!:", ex)
+            return False
 
 
 class IndividualSafetyRisk(models.Model):
@@ -561,7 +609,8 @@ class IndividualSafetyRisk(models.Model):
         try:
             self.save()  # execute query
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
     def retrieve_individual_safety_risk(self,
@@ -578,7 +627,8 @@ class IndividualSafetyRisk(models.Model):
                 queryset = queryset.filter(member_object=member_object)
             # if isr_option_object is not None:
             #     queryset = queryset.filter(isr_option_object=isr_option_object)
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return ()
 
         return tuple(queryset.values())
@@ -599,7 +649,8 @@ class IndividualSafetyRisk(models.Model):
             self.save()  # execute query
             return True
 
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
     def delete_individual_safety_risk(self):
@@ -607,7 +658,8 @@ class IndividualSafetyRisk(models.Model):
             self.delete()
             self.safety_risk.delete_safety_risk()
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
 
@@ -643,14 +695,7 @@ class Member(models.Model):
         managed = True
         db_table = 'member'
 
-    def create_member(self,
-                      age,
-                      name,
-                      email,
-                      password,
-                      address,
-                      living_distance,
-                      preferred_group):
+    def create_member(self, age, name, email, password, address, living_distance, preferred_group, fcm_id):
         """
         method to create 1 member data
         :param age: int, parameter for user, age of member
@@ -660,6 +705,7 @@ class Member(models.Model):
         :param address: string, residence address of member
         :param living_distance: float, living distance of member
         :param preferred_group: string, related and preferred group of member
+        :param fcm_id: string, member device id
         :return: bool, the result of adding data in the table. If the data is input well, True is returned.
         """
         u = User()  # super class call
@@ -673,20 +719,16 @@ class Member(models.Model):
         self.address = address
         self.living_distance = living_distance
         self.preferred_group = preferred_group
+        self.fcm_id = fcm_id
         try:
             self.save()  # execute query
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
-    def retrieve_member(self,
-                        age=None,
-                        name=None,
-                        email=None,
-                        password=None,
-                        address=None,
-                        living_distance=None,
-                        preferred_group=None):
+    def retrieve_member(self, age=None, name=None, email=None, password=None, address=None, living_distance=None,
+                        preferred_group=None, fcm_id=None):
         """
         method to retrieve member data
         :param age: int, parameter for user, age of member
@@ -696,10 +738,11 @@ class Member(models.Model):
         :param address: string, residence address of member
         :param living_distance: float, living distance of member
         :param preferred_group: string, related and preferred group of member
+        :param fcm_id: string, member device id
         :return: tuple, the result of query, shape is as below:
                     0 element or Error, Exception : ()
                     1 element: ({}, )
-                    n element: ({}, {}, {}, ... , {})
+                    n elements: ({}, {}, {}, ... , {})
         """
         queryset = Member.objects.select_related('user')  # inner join
 
@@ -721,7 +764,10 @@ class Member(models.Model):
                 queryset = queryset.filter(living_distance=living_distance)
             if preferred_group is not None:
                 queryset = queryset.filter(preferred_group=preferred_group)
-        except:
+            if fcm_id is not None:
+                queryset = queryset.filter(fcm_id=fcm_id)
+        except Exception as ex:
+            print("Exception!:", ex)
             return ()
 
         result = []  # list for store
@@ -732,6 +778,7 @@ class Member(models.Model):
                 'address': i.address,
                 'living_distance': i.living_distance,
                 'preferred_group': i.preferred_group,
+                'fcm_id': i.fcm_id,
 
                 # columns of super class
                 'user_id': i.user_id,
@@ -742,14 +789,8 @@ class Member(models.Model):
 
         return tuple(result)  # returning the dictionary list as tuple
 
-    def update_member(self,
-                      age=None,
-                      name=None,
-                      email=None,
-                      password=None,
-                      address=None,
-                      living_distance=None,
-                      preferred_group=None):
+    def update_member(self, age=None, name=None, email=None, password=None, address=None, living_distance=None,
+                      preferred_group=None, fcm_id=None):
         """
         method to update 1 member data
         :param age: int, parameter for user, age of member
@@ -759,6 +800,7 @@ class Member(models.Model):
         :param address: string, residence address of member
         :param living_distance: float, living distance of member
         :param preferred_group: string, related and preferred group of member
+        :param fcm_id: string, member device id
         :return: bool, the result of updating data in the table. If the data is input well, True is returned.
         """
 
@@ -779,12 +821,15 @@ class Member(models.Model):
             self.living_distance = living_distance
         if preferred_group is not None:
             self.preferred_group = preferred_group
+        if fcm_id is not None:
+            self.fcm_id = fcm_id
 
         try:
             self.save()  # execute query
             return True
 
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
     def delete_member(self):
@@ -792,7 +837,8 @@ class Member(models.Model):
             self.delete()
             self.user.delete_user()
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
 
@@ -811,7 +857,8 @@ class Person(models.Model):
         try:
             self.save()  # execute query
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
     def retrieve_person(self):
@@ -820,12 +867,13 @@ class Person(models.Model):
         :return: tuple, the result of query, shape is as below:
                     0 element: ()
                     1 element: ({}, )
-                    n element: ({}, {}, {}, ... , {})
+                    n elements: ({}, {}, {}, ... , {})
         """
         queryset = Person.objects
         try:
             return tuple(queryset.values())
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return ()
 
     def delete_person(self):
@@ -836,7 +884,8 @@ class Person(models.Model):
         try:
             self.delete()  # execute query
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
 
@@ -867,7 +916,8 @@ class Region(models.Model):
         try:
             self.save()  # execute query
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
     def update_region(self,
@@ -891,7 +941,8 @@ class Region(models.Model):
         try:
             self.save()  # execute query
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
     def delete_region(self):
@@ -899,68 +950,78 @@ class Region(models.Model):
             self.delete()
             self.group.delete_group()
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
 
 class SafetyRisk(models.Model):
     # [column name] = model.[column type].(conditions of column)
     enrolled_datetime = models.DateTimeField(blank=True, null=True)
-    methods = models.ManyToManyField('SafetyRiskAnalyticMethod')
+    methods = models.ManyToManyField('SafetyRiskAnalyticMethod', through='SrMethod')
 
     class Meta:
         managed = True
         db_table = 'safety_risk'
 
-    def create_safety_risk(self,
-                           enrolled_datetime):
+    def create_safety_risk(self, enrolled_datetime, methods_object):
         """
         method to create 1 safety risk data
         :param enrolled_datetime: datetime, date and time when safety risk is enrolled
+        :param methods_object: SafetyRiskAnalyticMethod, SafetyRiskAnalyticMethod object
         :return: bool, the result of adding data in the table. If the data is input well, True is returned.
         """
         self.enrolled_datetime = enrolled_datetime
 
         try:
             self.save()  # execute query
+            self.methods.add(methods_object)  # add the value to the join table
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
-    def retrieve_safety_risk(self,
-                             enrolled_datetime=None):
+    def retrieve_safety_risk(self, enrolled_datetime=None, methods_object=None):
         """
         method to retrieve specific safety risk data
         :param enrolled_datetime: datetime, date and time when safety risk is enrolled
+        :param methods_object: SafetyRiskAnalyticMethod, SafetyRiskAnalyticMethod object
         :return: tuple, the result of query, shape is as below:
                     0 element: ()
                     1 element: ({}, )
-                    n element: ({}, {}, {}, ... , {})
+                    n elements: ({}, {}, {}, ... , {})
         """
         queryset = SafetyRisk.objects
 
         try:
             if enrolled_datetime is not None:
                 queryset = queryset.filter(datetime=datetime)
+            if methods_object is not None:
+                queryset = queryset.filter(methods=methods_object)
+
             return tuple(queryset.values())
 
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return ()
 
-    def update_safety_risk(self,
-                           enrolled_datetime=None):
+    def update_safety_risk(self, enrolled_datetime=None, methods_object=None):
         """
         method to update 1 safety risk data
         :param enrolled_datetime: datetime, date and time when safety risk is enrolled
+        :param methods_object: SafetyRiskAnalyticMethod, SafetyRiskAnalyticMethod object
         :return: bool, the result of updating data in the table. If the data is updated well, True is returned.
         """
         if datetime is not None:
             self.enrolled_datetime = enrolled_datetime
+        if methods_object is not None:
+            self.methods.update(methods_object)
 
         try:
             self.save()  # execute query
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
     def delete_safety_risk(self):
@@ -971,7 +1032,8 @@ class SafetyRisk(models.Model):
         try:
             self.delete()
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
 
@@ -993,7 +1055,8 @@ class SafetyRiskAnalyticMethod(models.Model):
         try:
             self.save()  # execute query
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
     def retrieve_safety_risk_analytic_method(self):
@@ -1002,13 +1065,14 @@ class SafetyRiskAnalyticMethod(models.Model):
         :return: tuple, the result of query, shape is as below:
                     0 element: ()
                     1 element: ({}, )
-                    n element: ({}, {}, {}, ... , {})
+                    n elements: ({}, {}, {}, ... , {})
         """
         queryset = SafetyRiskAnalyticMethod.objects
 
         try:
             return tuple(queryset.values())
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return ()
 
     def update_safety_risk_analytic_method(self, enrolled_date):
@@ -1022,7 +1086,8 @@ class SafetyRiskAnalyticMethod(models.Model):
         try:
             self.save()  # execute query
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
     def delete_safety_risk_analytic_method(self):
@@ -1033,11 +1098,12 @@ class SafetyRiskAnalyticMethod(models.Model):
         try:
             self.delete()  # execute query
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
 
-class SrSrAnalyticMethod(models.Model):
+class SrMethod(models.Model):
     # [column name] = model.[column type].(conditions of column)
     sr_analytic_method = models.ForeignKey(SafetyRiskAnalyticMethod, models.DO_NOTHING, blank=True, null=True)
     sr = models.ForeignKey(SafetyRisk, models.DO_NOTHING, blank=True, null=True)
@@ -1067,7 +1133,8 @@ class StatisticalMethod(models.Model):
         try:
             self.save()  # execute query
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
     def retrieve_statistical_method(self, metric_name=None):
@@ -1077,7 +1144,8 @@ class StatisticalMethod(models.Model):
             # checking the value of this(sub) class
             if metric_name is not None:
                 queryset = queryset.filter(metric_name=metric_name)
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return ()
 
         return tuple(queryset.values())  # returning the queryset as tuple
@@ -1088,7 +1156,8 @@ class StatisticalMethod(models.Model):
         try:
             self.save()  # execute query
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
     def delete_statistical_method(self):
@@ -1097,7 +1166,8 @@ class StatisticalMethod(models.Model):
             # delete super class
             self.safety_risk_analytic_method.delete_safety_risk_analytic_method()
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
 
@@ -1139,7 +1209,8 @@ class User(models.Model):
         try:
             self.save()  # execute query
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
     def retrieve_user(self,
@@ -1156,7 +1227,7 @@ class User(models.Model):
         :return: tuple, the result of query, shape is as below:
                     0 element: ()
                     1 element: ({}, )
-                    n element: ({}, {}, {}, ... , {})
+                    n elements: ({}, {}, {}, ... , {})
 
         """
         queryset = User.objects
@@ -1172,7 +1243,8 @@ class User(models.Model):
                 queryset = queryset.filter(password=password)
 
             return tuple(queryset.values())
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return ()  # returning an empty tuple if none of the above apply
 
     def update_user(self,
@@ -1200,7 +1272,8 @@ class User(models.Model):
         try:
             self.save()  # execute query
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
 
     def delete_user(self):
@@ -1212,5 +1285,6 @@ class User(models.Model):
             self.delete()  # execute query
             self.person.delete_person()  # delete super class
             return True
-        except:
+        except Exception as ex:
+            print("Exception!:", ex)
             return False
