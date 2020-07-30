@@ -7,6 +7,45 @@ from django.db import models
 from datetime import datetime
 
 
+class Alert(models.Model):
+    # [column name] = model.[column type].(conditions of column)
+
+    class Meta:
+        managed = True
+        db_table = 'alert'
+
+    def create_alert(self):
+        pass
+
+    def retrieve_alert(self):
+        pass
+
+    def update_alert(self):
+        pass
+
+    def delete_alert(self):
+        pass
+
+
+class AlertOption(models.Model):
+    # [column name] = model.[column type].(conditions of column)
+
+    class Meta:
+        managed = True
+        db_table = 'alert_option'
+
+    def create_alert_option(self):
+        pass
+
+    def retrieve_alert_option(self):
+        pass
+
+    def update_alert_option(self):
+        pass
+
+    def delete_alert_option(self):
+        pass
+
 class Building(models.Model):
     # [column name] = model.[column type].(conditions of column)
     building_type = models.CharField(max_length=255, blank=True, null=True)
@@ -402,7 +441,7 @@ class GroupSafetyRisk(models.Model):
     # [column name] = model.[column type].(conditions of column)
     gsr = models.FloatField(blank=True, null=True)
     group = models.ForeignKey(Group, models.DO_NOTHING, blank=True, null=True)
-    gsr_option_id = models.IntegerField(blank=True, null=True)
+    gsr_option = models.OneToOneField('GSROption', blank=True, null=True, on_delete=models.DO_NOTHING)
     safety_risk = models.ForeignKey('SafetyRisk', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
@@ -476,29 +515,48 @@ class GroupSafetyRisk(models.Model):
             return False
 
 
+class GSROption(models.Model):
+    weight_list = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'gsr_option'
+
+    def create_gsr_option(self):
+        pass
+
+    def retrieve_gsr_option(self):
+        pass
+
+    def update_gsr_option(self):
+        pass
+
+    def delete_gsr_option(self):
+        pass
+
+
 class IndividualSafetyRisk(models.Model):
     # [column name] = model.[column type].(conditions of column)
     isr = models.FloatField(blank=True, null=True)
     member = models.ForeignKey('Member', models.DO_NOTHING, blank=True, null=True)
-    isr_option_id = models.IntegerField(blank=True, null=True)
+    isr_option = models.OneToOneField('ISROption', blank=True, null=True, on_delete=models.DO_NOTHING)
     safety_risk = models.ForeignKey('SafetyRisk', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
         managed = True
-        db_table = 'indivisual safety risk'
+        db_table = 'individual_safety_risk'
 
     def create_individual_safety_risk(self,
                                       isr,
                                       member_object,
-                                      # isr_option_object,
-                                      ):
+                                      isr_option_object):
         sr = SafetyRisk()
         sr.create_safety_risk(datetime.now())
         self.safety_risk = sr
 
         self.isr = isr
         self.member = member_object
-        # self.isr_option_object = isr_option_object
+        self.isr_option_object = isr_option_object
 
         try:
             self.save()  # execute query
@@ -553,6 +611,26 @@ class IndividualSafetyRisk(models.Model):
             return False
 
 
+class ISROption(models.Model):
+    weight_list = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'isr_option'
+
+    def create_isr_option(self):
+        pass
+
+    def retrieve_isr_option(self):
+        pass
+
+    def update_isr_option(self):
+        pass
+
+    def delete_isr_option(self):
+        pass
+
+
 class Member(models.Model):
     # [column name] = model.[column type].(conditions of column)
     address = models.CharField(max_length=255, blank=True, null=True)
@@ -605,6 +683,7 @@ class Member(models.Model):
                         age=None,
                         name=None,
                         email=None,
+                        password=None,
                         address=None,
                         living_distance=None,
                         preferred_group=None):
@@ -613,6 +692,7 @@ class Member(models.Model):
         :param age: int, parameter for user, age of member
         :param name: string, parameter for user, name of member
         :param email: string, parameter for user, email address as login ID
+        :param password: string, parameter for user, password for login
         :param address: string, residence address of member
         :param living_distance: float, living distance of member
         :param preferred_group: string, related and preferred group of member
@@ -631,6 +711,8 @@ class Member(models.Model):
                 queryset = queryset.filter(user__name=name)
             if email is not None:
                 queryset = queryset.filter(user__email=email)
+            if password is not None:
+                queryset = queryset.filter(user__password=password)
 
             # checking the value of this(sub) class
             if address is not None:

@@ -12,7 +12,7 @@ class GSRMetric:
                     isolated_confirmed_count, isolated_contacted_count,  # about isolation people
                     identified_cc_count,  # about identified people
                     hospital_capability):  # about hospital capability
-        # TODO: methodnize the all factors as pre-precessing
+        # TODO: To convert factor to method the all factors as pre-precessing
         # 1. Number of COVID-19 Tests Performed --> X
 
         # 2. COVID-19 Test Rate --> Proportion
