@@ -212,8 +212,7 @@ class Country(models.Model):
                 queryset = queryset.filter(region__group__num_person=num_person)
             if severity_average is not None:
                 queryset = queryset.filter(region__group__severity_average=severity_average)
-
-            if email is not None:
+            if region_name is not None:
                 queryset = queryset.filter(region__region_name=region_name)
 
             if continent is not None:
@@ -221,6 +220,7 @@ class Country(models.Model):
         except Exception as ex:
             print("Exception!:", ex)
             return ()
+        # TODO: 구현안됨
 
     def update_country(self,
                        address=None,
@@ -596,17 +596,14 @@ class IndividualSafetyRisk(models.Model):
         managed = True
         db_table = 'individual_safety_risk'
 
-    def create_individual_safety_risk(self,
-                                      isr,
-                                      member_object,
-                                      isr_option_object):
+    def create_individual_safety_risk(self, isr, member_object, isr_option_object, methods_object):
         sr = SafetyRisk()
-        sr.create_safety_risk(datetime.now())
+        sr.create_safety_risk(datetime.now(), methods_object)
         self.safety_risk = sr
 
         self.isr = isr
         self.member = member_object
-        self.isr_option_object = isr_option_object
+        self.isr_option = isr_option_object
 
         try:
             self.save()  # execute query
@@ -615,37 +612,41 @@ class IndividualSafetyRisk(models.Model):
             print("Exception!:", ex)
             return False
 
-    def retrieve_individual_safety_risk(self,
-                                        isr=None,
-                                        member_object=None,
-                                        # isr_option_object=None,
-                                        ):
+    def retrieve_individual_safety_risk(self, isr=None, member_object=None, isr_option_object=None,
+                                        methods_object=None):
         queryset = IndividualSafetyRisk.objects
 
         try:
+            # checking the value of super class
+            if methods_object is not None:
+                queryset = queryset.filter(safety_risk__methods=methods_object)
+
+            # checking the value of this(sub) class
             if isr is not None:
                 queryset = queryset.filter(isr=isr)
             if member_object is not None:
                 queryset = queryset.filter(member_object=member_object)
-            # if isr_option_object is not None:
-            #     queryset = queryset.filter(isr_option_object=isr_option_object)
+            if isr_option_object is not None:
+                queryset = queryset.filter(isr_option=isr_option_object)
         except Exception as ex:
             print("Exception!:", ex)
             return ()
 
         return tuple(queryset.values())
 
-    def update_individual_safety_risk(self,
-                                      isr=None,
-                                      member_object=None,
-                                      # isr_option_object=None,
-                                      ):
+    def update_individual_safety_risk(self, isr=None, member_object=None, isr_option_object=None,
+                                      methods_object=None):
+        # updating values of super class
+        if methods_object is not None:
+            self.safety_risk.update_safety_risk(methods_object=methods_object)
+
+        # updating values of sub class
         if isr is not None:
             self.isr = isr
         if member_object is not None:
             self.member = member_object
-        # if isr_option_object is not None:
-        #     self.isr_option_id = isr_option_object
+        if isr_option_object is not None:
+            self.isr_option = isr_option_object
 
         try:
             self.save()  # execute query
