@@ -458,7 +458,7 @@ class GroupSafetyRisk(models.Model):
     # [column name] = model.[column type].(conditions of column)
     gsr = models.FloatField(blank=True, null=True)
     group = models.ForeignKey(Group, models.DO_NOTHING, blank=True, null=True)
-    gsr_option = models.ForeignKey('GSROption', blank=True, null=True, on_delete=models.DO_NOTHING)
+    gsr_option = models.ForeignKey('GsrOption', blank=True, null=True, on_delete=models.DO_NOTHING)
     safety_risk = models.ForeignKey('SafetyRisk', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
@@ -503,6 +503,7 @@ class GroupSafetyRisk(models.Model):
         return tuple(queryset.values())
 
     def update_group_safety_risk(self, gsr=None, group_object=None, gsr_option_object=None, methods_object=None):
+        # updating values of super class
         if methods_object is not None:
             self.safety_risk.update_safety_risk(methods_object=methods_object)
 
@@ -532,7 +533,7 @@ class GroupSafetyRisk(models.Model):
             return False
 
 
-class GSROption(models.Model):
+class GsrOption(models.Model):
     # [column name] = model.[column type].(conditions of column)
     weight_list = models.CharField(max_length=255, blank=True, null=True)
 
@@ -551,7 +552,7 @@ class GSROption(models.Model):
             return False
 
     def retrieve_gsr_option(self, weight_list):
-        queryset = GSROption.objects
+        queryset = GsrOption.objects
 
         try:
             # TODO: How to handle the 'list'?
@@ -575,6 +576,7 @@ class GSROption(models.Model):
             return False
 
     def delete_gsr_option(self):
+
         try:
             self.delete()  # execute query
             return True
@@ -587,7 +589,7 @@ class IndividualSafetyRisk(models.Model):
     # [column name] = model.[column type].(conditions of column)
     isr = models.FloatField(blank=True, null=True)
     member = models.ForeignKey('Member', models.DO_NOTHING, blank=True, null=True)
-    isr_option = models.OneToOneField('ISROption', blank=True, null=True, on_delete=models.DO_NOTHING)
+    isr_option = models.OneToOneField('IsrOption', blank=True, null=True, on_delete=models.DO_NOTHING)
     safety_risk = models.ForeignKey('SafetyRisk', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
@@ -663,7 +665,7 @@ class IndividualSafetyRisk(models.Model):
             return False
 
 
-class ISROption(models.Model):
+class IsrOption(models.Model):
     weight_list = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
@@ -1014,8 +1016,10 @@ class SafetyRisk(models.Model):
         """
         if datetime is not None:
             self.enrolled_datetime = enrolled_datetime
+
+        # TODO: This part do not work now!
         if methods_object is not None:
-            self.methods.update(methods_object)
+            self.methods.update(safety_risk_analytic_method=methods_object)
 
         try:
             self.save()  # execute query
@@ -1110,9 +1114,9 @@ class SrMethod(models.Model):
 
     class Meta:
         managed = True
-        db_table = 'sr_sr_analytic_method'
+        db_table = 'sr_method'
 
-
+# TODO: divide and convert 'StatisticalMethod' to 'GsrMetric' and 'IsrMetric'
 class StatisticalMethod(models.Model):
     # [column name] = model.[column type].(conditions of column)
     metric_name = models.CharField(max_length=255, blank=True, null=True)
@@ -1183,11 +1187,7 @@ class User(models.Model):
         managed = True
         db_table = 'user'
 
-    def create_user(self,
-                    age,
-                    name,
-                    email,
-                    password):
+    def create_user(self, age, name, email, password):
         """
         method to create 1 user data
         :param age: int, age of user
@@ -1213,11 +1213,7 @@ class User(models.Model):
             print("Exception!:", ex)
             return False
 
-    def retrieve_user(self,
-                      age=None,
-                      name=None,
-                      email=None,
-                      password=None):
+    def retrieve_user(self, age=None, name=None, email=None, password=None):
         """
         method to retrieve specific user data
         :param age: int, age of user
@@ -1247,11 +1243,7 @@ class User(models.Model):
             print("Exception!:", ex)
             return ()  # returning an empty tuple if none of the above apply
 
-    def update_user(self,
-                    age=None,
-                    name=None,
-                    email=None,
-                    password=None):
+    def update_user(self, age=None, name=None, email=None, password=None):
         """
         method to retrieve specific user data
         :param age: int, age of user
