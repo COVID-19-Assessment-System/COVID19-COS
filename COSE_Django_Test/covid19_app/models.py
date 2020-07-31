@@ -589,7 +589,7 @@ class IndividualSafetyRisk(models.Model):
     # [column name] = model.[column type].(conditions of column)
     isr = models.FloatField(blank=True, null=True)
     member = models.ForeignKey('Member', models.DO_NOTHING, blank=True, null=True)
-    isr_option = models.OneToOneField('IsrOption', blank=True, null=True, on_delete=models.DO_NOTHING)
+    isr_option = models.ForeignKey('IsrOption', models.DO_NOTHING, blank=True, null=True)
     safety_risk = models.ForeignKey('SafetyRisk', models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
@@ -612,8 +612,7 @@ class IndividualSafetyRisk(models.Model):
             print("Exception!:", ex)
             return False
 
-    def retrieve_individual_safety_risk(self, isr=None, member_object=None, isr_option_object=None,
-                                        methods_object=None):
+    def retrieve_individual_safety_risk(self, isr=None, member_id=None, isr_option_id=None, methods_object=None):
         queryset = IndividualSafetyRisk.objects
 
         try:
@@ -624,10 +623,10 @@ class IndividualSafetyRisk(models.Model):
             # checking the value of this(sub) class
             if isr is not None:
                 queryset = queryset.filter(isr=isr)
-            if member_object is not None:
-                queryset = queryset.filter(member_object=member_object)
-            if isr_option_object is not None:
-                queryset = queryset.filter(isr_option=isr_option_object)
+            if member_id is not None:
+                queryset = queryset.filter(member_id=member_id)
+            if isr_option_id is not None:
+                queryset = queryset.filter(isr_option_id=isr_option_id)
         except Exception as ex:
             print("Exception!:", ex)
             return ()
@@ -731,7 +730,7 @@ class Member(models.Model):
             return False
 
     def retrieve_member(self, age=None, name=None, email=None, password=None, address=None, living_distance=None,
-                        preferred_group=None, fcm_id=None):
+                        preferred_group=None, fcm_id=None, user_id=None):
         """
         method to retrieve member data
         :param age: int, parameter for user, age of member
@@ -742,6 +741,7 @@ class Member(models.Model):
         :param living_distance: float, living distance of member
         :param preferred_group: string, related and preferred group of member
         :param fcm_id: string, member device id
+        :param user_id: int, user id
         :return: tuple, the result of query, shape is as below:
                     0 element or Error, Exception : ()
                     1 element: ({}, )
@@ -769,6 +769,8 @@ class Member(models.Model):
                 queryset = queryset.filter(preferred_group=preferred_group)
             if fcm_id is not None:
                 queryset = queryset.filter(fcm_id=fcm_id)
+            if user_id is not None:
+                queryset = queryset.filter(user_id=user_id)
         except Exception as ex:
             print("Exception!:", ex)
             return ()
@@ -961,7 +963,7 @@ class Region(models.Model):
 class SafetyRisk(models.Model):
     # [column name] = model.[column type].(conditions of column)
     enrolled_datetime = models.DateTimeField(blank=True, null=True)
-    methods = models.ManyToManyField('SafetyRiskAnalyticMethod', through='SrMethod')
+    methods = models.ManyToManyField('SafetyRiskAnalyticMethod', through='UsedMethod')
 
     class Meta:
         managed = True
@@ -1108,14 +1110,39 @@ class SafetyRiskAnalyticMethod(models.Model):
             return False
 
 
-class SrMethod(models.Model):
+class UsedMethod(models.Model):
     # [column name] = model.[column type].(conditions of column)
     sr_analytic_method = models.ForeignKey(SafetyRiskAnalyticMethod, models.DO_NOTHING, blank=True, null=True)
     sr = models.ForeignKey(SafetyRisk, models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
         managed = True
-        db_table = 'sr_method'
+        db_table = 'used_method'
+
+    def create_used_method(self):
+        pass
+
+    def retrieve_used_method(self, sr_analytic_method_id=None, sr_id=None):
+        queryset = UsedMethod.objects
+
+        try:
+            if sr_analytic_method_id is not None:
+                queryset = queryset.filter(sr_analytic_method_id=sr_analytic_method_id)
+            if sr_id is not None:
+                queryset = queryset.filter(sr_id=sr_id)
+
+            return tuple(queryset.values())
+
+        except Exception as ex:
+            print("Exception!:", ex)
+            return ()  # returning an empty tuple if none of the above apply
+
+    def update_used_method(self):
+        pass
+
+    def delete_used_method(self):
+        pass
+
 
 # TODO: divide and convert 'StatisticalMethod' to 'GsrMetric' and 'IsrMetric'
 class StatisticalMethod(models.Model):
@@ -1142,13 +1169,15 @@ class StatisticalMethod(models.Model):
             print("Exception!:", ex)
             return False
 
-    def retrieve_statistical_method(self, metric_name=None):
-        queryset = SafetyRiskAnalyticMethod.objects
+    def retrieve_statistical_method(self, metric_name=None, safety_risk_analytic_method_id=None):
+        queryset = StatisticalMethod.objects
 
         try:
             # checking the value of this(sub) class
             if metric_name is not None:
                 queryset = queryset.filter(metric_name=metric_name)
+            if safety_risk_analytic_method_id is not None:
+                queryset = queryset.filter(safety_risk_analytic_method_id=safety_risk_analytic_method_id)
         except Exception as ex:
             print("Exception!:", ex)
             return ()
