@@ -262,7 +262,7 @@ class GSRMetric:
         return max(related_isr_list)
 
     def compute_gsr(self, weight_dic, factor_dic):
-        if weight_dic.keys() != factor_dic.keys():  # s
+        if weight_dic.keys() != factor_dic.keys():  # target is same?
             try:
                 raise ValueError("The targets of Weight Dictionary and Types of GSR Factor is different!")
             except ValueError:
@@ -270,12 +270,12 @@ class GSRMetric:
 
         gsr = sum(list([(factor_dic[k] * weight_dic[k]) for k in set(weight_dic) & set(factor_dic)]))
 
-        if gsr > 1:  # gsr is out of range?
+        if gsr > 1:  # GSR is out of range?
             try:
                 raise ValueError("GSR Value is greater than 1!")
             except ValueError:
                 return None
-        elif gsr < 0:  # gsr is out of range?
+        elif gsr < 0:  # GSR is out of range?
             try:
                 raise ValueError("GSR Value is negative number!")
             except ValueError:
@@ -432,10 +432,23 @@ class ISRMetric:
         return f5
 
     def compute_isr(self, weight_dic, factor_dic):
-        if weight_dic.keys() != factor_dic.keys():
+        if weight_dic.keys() != factor_dic.keys():  # target is same?
             try:
-                raise ValueError("The targets of Weight Dictionary and Types of ISR Factor is different!")
+                raise ValueError("The targets of Weight Dictionary and Types of GSR Factor is different!")
             except ValueError:
                 return None
 
-        return sum([(a[k] * b[k]) for k in set(b) & set(a)])
+        isr = sum(list([(factor_dic[k] * weight_dic[k]) for k in set(weight_dic) & set(factor_dic)]))
+
+        if isr > 1:  # ISR is out of range?
+            try:
+                raise ValueError("ISR Value is greater than 1!")
+            except ValueError:
+                return None
+        elif isr < 0:  # ISR is out of range?
+            try:
+                raise ValueError("ISR Value is negative number!")
+            except ValueError:
+                return None
+        else:
+            return isr
